@@ -13,17 +13,11 @@ defmodule StargazerApiWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", StargazerApiWeb do
-    pipe_through :browser
-
-    get "/", PageController, :index
-  end
-
   scope "/api", StargazerApiWeb do
     pipe_through :api
 
-    post "/repos/:user/:repo", RepoController, :add_repo
-    get "/repos/:user/:repo", RepoController, :get_stargazers
+    post "/repos", RepoController, :add_repo
+    get "/repos/:owner/:repo", RepoController, :get_stargazers
   end
 
   if Mix.env() in [:dev, :test] do
