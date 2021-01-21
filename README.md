@@ -1,20 +1,43 @@
 # StargazerApi
 
-To start your Phoenix server:
+This repo contains a simple server for tracking Github Repo's stargazers.
 
-  * Install dependencies with `mix deps.get`
-  * Create and migrate your database with `mix ecto.setup`
-  * Install Node.js dependencies with `npm install` inside the `assets` directory
-  * Start Phoenix endpoint with `mix phx.server`
+## Getting started
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+Setting up and starting the API server:
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+  *  `mix deps.get`
+  *  `mix ecto.create`
+  *  `mix ecto.migrate`
+  *  `cd assets && npm install && cd ..`
+  *  `mix phx.server`
 
-## Learn more
+## Running the tests
 
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
+`mix test`
+
+## Future Scheduling Work
+
+In order to implement the scheduler, I would use the [Quantum](https://github.com/quantum-elixir/quantum-core) elixir library for running scheduled jobs.
+
+The implementation is simple. After installing the dependency, you can add the following config to this project:
+
+```
+config :acme, StagazerApi.Scheduler,
+  jobs: [
+    # Runs every midnight:
+    {"29 22 * * *", {StagazerApi.Jobs, :track_daily, []}}
+  ]
+```
+
+This runs our job 30 minutes before midnight, everyday.
+
+Now, create a module named `StagazerApi.Jobs` and implement the `track_daily/0` function. This function will iterate over all repos in the `"github_repos"` db, and run request the current stargazers for each through the Github API.
+
+Next, query the get the `"repo_stargazers_daily"` db to get a list of entries for all of the stargazers up until (but not including) today. Combine them into one list, then `Enum.dedup/2` the full list from the Github request and this list. Ex,
+
+```
+new_stargazers = Enum.dedup(all_stargazers, former_stargazers)
+```
+
+Create a new `StargazerApi.GithubRepos.Daily` entry in the db with today's date and the `new_stargazers`.
