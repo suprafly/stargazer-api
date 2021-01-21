@@ -23,6 +23,20 @@ defmodule StargazerApiWeb.RepoController do
     |> render("error.json", msg: "Missing required fields")
   end
 
-  def get_stargazers(_conn, %{"owner" => _owner, "repo" => _repo, "from" => _from_date, "to" => _to_date}) do
+  # def get_stargazers(conn, %{"owner" => _owner, "name" => name, "from" => _from_date, "to" => _to_date}) do
+  #   render(conn, "add_repo.json", name: name)
+  # end
+
+  def get_stargazers(conn, %{"owner" => owner, "name" => name}) do
+    with {:ok, stargazers} <- StargazerApi.get_stargazers(owner, name, take: ["login", "id"]) do
+      render(conn, "stargazers.json", new: stargazers)
+    end
+  end
+
+  def get_stargazers(conn, _params) do
+    conn
+    |> put_status(:unprocessable_entity)
+    |> put_view(StargazerApiWeb.ErrorView)
+    |> render("error.json", msg: "Missing required fields")
   end
 end

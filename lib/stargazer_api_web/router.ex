@@ -17,7 +17,7 @@ defmodule StargazerApiWeb.Router do
     pipe_through :api
 
     post "/repos", RepoController, :add_repo
-    get "/repos/:owner/:repo", RepoController, :get_stargazers
+    get "/repos/:owner/:name", RepoController, :get_stargazers
   end
 
   if Mix.env() in [:dev, :test] do
