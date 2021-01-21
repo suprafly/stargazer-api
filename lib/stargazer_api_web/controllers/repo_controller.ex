@@ -31,13 +31,6 @@ defmodule StargazerApiWeb.RepoController do
     end
   end
 
-  def get_stargazers(conn, %{"owner" => owner, "name" => name} = params) do
-    IO.inspect params
-    with {:ok, stargazers} <- StargazerApi.get_stargazers(owner, name, take: ["id"]) do
-      render(conn, "stargazers.json", new: stargazers)
-    end
-  end
-
   def get_stargazers(conn, _params) do
     conn
     |> put_status(:unprocessable_entity)

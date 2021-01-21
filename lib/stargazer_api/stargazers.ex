@@ -18,7 +18,7 @@ defmodule StargazerApi.Stargazers do
       reduce(stargazers)
     else
       {:error, :invalid_format} ->
-        {:error, "Invalid format for date. Please use '2020-01-31' instead."}
+        {:error, "Invalid format for date. Please use 'YYYY-MM-DD' instead."}
     end
   end
 

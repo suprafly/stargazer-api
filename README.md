@@ -16,6 +16,10 @@ Setting up and starting the API server:
 
 `mix test`
 
+## Api Docs
+
+Once you start the server, you can view the api docs here, [http://localhost:4000/api-docs/index.html](http://localhost:4000/api-docs/index.html)
+
 ## Future Scheduling Work
 
 In order to implement the scheduler, I would use the [Quantum](https://github.com/quantum-elixir/quantum-core) elixir library for running scheduled jobs.

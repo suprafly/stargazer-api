@@ -5,6 +5,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const Apidoc = require('webpack-apidoc');
 
 module.exports = (env, options) => {
   const devMode = options.mode !== 'production';
@@ -45,8 +46,12 @@ module.exports = (env, options) => {
       ]
     },
     plugins: [
+      new Apidoc({
+        src: "api-docs/",
+        dest: "../priv/static/api-docs/"
+      }),
       new MiniCssExtractPlugin({ filename: '../css/app.css' }),
-      new CopyWebpackPlugin([{ from: 'static/', to: '../' }])
+      new CopyWebpackPlugin([{ from: 'static/', to: '../' }]),
     ]
     .concat(devMode ? [new HardSourceWebpackPlugin()] : [])
   }

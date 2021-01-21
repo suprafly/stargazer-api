@@ -24,7 +24,13 @@ defmodule StargazerApiWeb.Endpoint do
     at: "/",
     from: :stargazer_api,
     gzip: false,
-    only: ~w(css fonts images js favicon.ico robots.txt)
+    only: ~w(css fonts images js favicon.ico robots.txt api-docs)
+
+  plug Plug.Static,
+    at: "/api-docs",
+    from: :stargazer_api,
+    gzip: false,
+    only: ~w(api-docs)
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
