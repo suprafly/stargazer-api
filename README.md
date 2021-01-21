@@ -25,19 +25,24 @@ The implementation is simple. After installing the dependency, you can add the f
 ```
 config :acme, StagazerApi.Scheduler,
   jobs: [
-    # Runs every midnight:
-    {"29 22 * * *", {StagazerApi.Jobs, :track_daily, []}}
+    # Runs day, at 11:30 PM:
+    {"29 22 * * *", {StagazerApi.Jobs, :track_daily, []}},
+
+    # Runs day, at midnight
+    # See the section 'Known Limitations' below for an explanation on how you would use this job:
+    # {"@daily", {StagazerApi.Jobs, :update_daily, []}}
+
   ]
 ```
 
 This runs our job 30 minutes before midnight, everyday.
 
-Now, create a module named `StagazerApi.Jobs` and implement the `track_daily/0` function. This function will iterate over all repos in the `"github_repos"` db, and run request the current stargazers for each through the Github API.
+Now, create a module named `StagazerApi.Jobs` and implement the `track_daily/0` function. This function will iterate over all repos in the `"github_repos"` db, and run a request for the current stargazers for each through the Github API.
 
-Next, query the get the `"repo_stargazers_daily"` db to get a list of entries for all of the stargazers up until (but not including) today. Combine them into one list, then `Enum.dedup/2` the full list from the Github request and this list. Ex,
+Create a new `StargazerApi.GithubRepos.Daily` entry in the db with today's date and the stargazers. There is a function in `StargazerApi.GithubRepos`, `store_stargazers_today/1`, that will perform the data store for a given repo.
 
-```
-new_stargazers = Enum.dedup(all_stargazers, former_stargazers)
-```
+## Known Limitations
 
-Create a new `StargazerApi.GithubRepos.Daily` entry in the db with today's date and the `new_stargazers`.
+The scheduler described above runs at 11:30 PM in the timezone of the machine that is running the server. I have left a 30 minute gap before midnight in case we need to restart the machine in that timeframe, and update the scheduler to handle this sort of behaviour. The thirty minute gap means that people may still star / unstar the repo during this day, but that it will not show up until the next day.
+
+To me this is acceptable for a proof of concept, and given that we always remain consistent. If we want to correct for this thirty minutes, we can schedule another job at midnight and then update the previous entry accordingly.
