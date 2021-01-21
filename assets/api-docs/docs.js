@@ -11,13 +11,13 @@
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "owner": "suprafly",
- *       "name": "stargazers"
+ *       "owner": "phoenixframework",
+ *       "name": "phoenix"
  *     }
  */
 
 /**
- * @api {post} /api/repos/:owner/:name Get stargazer information
+ * @api {post} /api/repos/:owner/:name/history Get stargazer history
  * @apiName GetRepoStargazers
  * @apiGroup Repo
  *
