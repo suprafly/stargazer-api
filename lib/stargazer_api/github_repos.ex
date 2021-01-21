@@ -5,6 +5,16 @@ defmodule StargazerApi.GithubRepos do
   alias StargazerApi.{GithubRepos.Daily, GithubRepos.GithubRepo, Repo}
 
   @doc """
+  Gets a repo by owner and repo name.
+  """
+  def get_repo(owner, name) do
+    case Repo.get_by(GithubRepo, owner: owner, name: name) do
+      nil -> {:error, "No repo found"}
+      repo -> {:ok, repo}
+    end
+  end
+
+  @doc """
   Gets the stargazers for today for a given repo and stores them. In order
   to save space, we only store the `id`'s of the users, because we can always
   rehtdrate the users later if we need more information.

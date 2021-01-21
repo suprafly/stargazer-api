@@ -1,7 +1,7 @@
 defmodule StargazerApiWeb.RepoController do
   use StargazerApiWeb, :controller
 
-  alias StargazerApi.GithubRepos.GithubRepo
+  alias StargazerApi.{GithubRepos, GithubRepos.GithubRepo, Stargazers}
 
   action_fallback StargazerApiWeb.FallbackController
 
@@ -23,12 +23,17 @@ defmodule StargazerApiWeb.RepoController do
     |> render("error.json", msg: "Missing required fields")
   end
 
-  # def get_stargazers(conn, %{"owner" => _owner, "name" => name, "from" => _from_date, "to" => _to_date}) do
-  #   render(conn, "add_repo.json", name: name)
-  # end
+  def get_stargazers(conn, %{"owner" => owner, "name" => name, "from" => from_date, "to" => to_date} = params) do
+    with {:ok, repo} <- GithubRepos.get_repo(owner, name),
+         {:ok, resp} <- Stargazers.get_new_and_former_stargazers(repo, from_date, to_date)
+    do
+      render(conn, "stargazers.json", resp)
+    end
+  end
 
-  def get_stargazers(conn, %{"owner" => owner, "name" => name}) do
-    with {:ok, stargazers} <- StargazerApi.get_stargazers(owner, name, take: ["login", "id"]) do
+  def get_stargazers(conn, %{"owner" => owner, "name" => name} = params) do
+    IO.inspect params
+    with {:ok, stargazers} <- StargazerApi.get_stargazers(owner, name, take: ["id"]) do
       render(conn, "stargazers.json", new: stargazers)
     end
   end

@@ -9,11 +9,16 @@ defmodule StargazerApi.Stargazers do
   @doc """
   Gets a report of stargazers that have starred or unstarred over the date range.
   """
-  def get_new_and_former_stargazers(%GithubRepo{} = repo, from_date, to_date) do
-    with historical <- get_historical(repo.id, from_date, to_date),
+  def get_new_and_former_stargazers(%GithubRepo{} = repo, from_date_str, to_date_str) do
+    with {:ok, from_date} <- Date.from_iso8601(from_date_str),
+         {:ok, to_date} <- Date.from_iso8601(to_date_str),
+         historical <- get_historical(repo.id, from_date, to_date),
          stargazers <- Enum.map(historical, & &1.stargazers)
     do
       reduce(stargazers)
+    else
+      {:error, :invalid_format} ->
+        {:error, "Invalid format for date. Please use '2020-01-31' instead."}
     end
   end
 
@@ -80,10 +85,10 @@ defmodule StargazerApi.Stargazers do
   end
 
   defp parse_results(%{new: new, former: former}) do
-    %{
+    {:ok, %{
       new: Enum.map(new, &stringify(&1, "starred")),
       former: Enum.map(former, &stringify(&1, "unstarred"))
-    }
+    }}
   end
 
   defp stringify({id, 1}, type) do
