@@ -9,6 +9,6 @@ defmodule StargazerApiWeb.Router do
     pipe_through :api
 
     post "/repos", RepoController, :add_repo
-    post "/repos/:owner/:name/history", RepoController, :get_stargazers
+    get "/repos/:owner/:name/history", RepoController, :get_stargazers
   end
 end

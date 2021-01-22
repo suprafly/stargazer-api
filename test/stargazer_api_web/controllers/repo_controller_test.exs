@@ -12,12 +12,12 @@ defmodule StargazerApiWeb.RepoControllerTest do
   end
 
   test "POST invalid /repos/:owner/:name/history", %{conn: conn} do
-    conn = post(conn, "api/repos/phoenixframework/phoenixframework/history", %{})
+    conn = get(conn, "api/repos/phoenixframework/phoenixframework/history", %{})
     assert json_response(conn, 422) == %{"error" => %{"msg" => "Missing required fields"}}
   end
 
   test "POST no repo /repos/:owner/:name/history", %{conn: conn} do
-    conn = post(conn, "api/repos/phoenixframework/phoenixframework/history", %{"from" => "11-20-2020", "to" => "12-2-2020"})
+    conn = get(conn, "api/repos/phoenixframework/phoenixframework/history", %{"from" => "11-20-2020", "to" => "12-2-2020"})
     assert json_response(conn, 422) == %{"error" => %{"msg" => "No repo found"}}
   end
 
@@ -25,7 +25,7 @@ defmodule StargazerApiWeb.RepoControllerTest do
     conn = post(conn, "api/repos/", %{"owner" => "phoenixframework", "name" => "phoenixframework"})
     assert json_response(conn, 200) == %{"name" => "phoenixframework", "owner" => "phoenixframework"}
 
-    conn = post(conn, "api/repos/phoenixframework/phoenixframework/history", %{"from" => "11-20-2020", "to" => "12-2-2020"})
+    conn = get(conn, "api/repos/phoenixframework/phoenixframework/history", %{"from" => "11-20-2020", "to" => "12-2-2020"})
     assert json_response(conn, 422) == %{"error" => %{"msg" => "Invalid format for date. Please use 'YYYY-MM-DD' instead."}}
   end
 
